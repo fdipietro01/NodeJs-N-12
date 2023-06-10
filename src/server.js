@@ -7,9 +7,29 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const { addLogger } = require("./middlewares/logger");
 const logger = require("./logger/customLogger");
+const swaggerDoc = require("swagger-jsdoc");
+const swaggerUiExpress = require("swagger-ui-express");
 const { port } = require("./config/config");
 
+//seting app
 const app = express();
+
+//enable documentation
+const swaggerOpts = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Documentación de Adoptame",
+      description: "Api pensada para adopción de mascotas",
+    },
+  },
+  apis: [`${__dirname}/docs/**/*.yaml`],
+};
+
+const specs = swaggerDoc(swaggerOpts);
+app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+
+//setting loggers
 app.use(addLogger);
 
 //enable cors
